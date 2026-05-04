@@ -8,7 +8,7 @@ const ThemedCard = ({
     const Container = onPress ? Pressable : View;
     return (
         <Container
-            className={`rounded-lg bg-slate-200 dark:bg-gray-700 p-4 ${className}`}
+            className={`rounded-2xl bg-slate-200 border-2 border-gray-900 dark:border-white dark:bg-gray-700 p-4 ${className}`}
             onPress={onPress}
             {...props}
         >

@@ -22,26 +22,30 @@
   }
 
   .home-avatar {
-    @apply w-12 h-12 rounded-full bg-gray-200;
+    @apply w-14 h-14 rounded-full bg-gray-200;
   }
-
-  /* --- Balance Card Styles --- */
-
   .home-balance-card {
     @apply mx-5 mt-5 p-6 rounded-[30px] bg-blue-500 shadow-lg shadow-blue-500/30;
-    /* បើចង់ឱ្យ Dark Mode ដូរពណ៌កាត អាចថែម: dark:bg-slate-800 */
   }
-
   .home-balance-row {
     @apply mt-2 flex-row items-center justify-between;
   }
-
-  /* បន្ថែមស្ទីលអក្សរពិសេសសម្រាប់លេខលុយ */
   .balance-amount {
     @apply text-3xl font-bold text-white;
   }
-
   .balance-label {
     @apply text-blue-100 opacity-80;
+  }
+  .list-heading {
+    @apply flex-row items-center justify-between mt-5 mb-3 px-5;
+  }
+  .upcoming-row {
+    @apply flex-row items-center gap-3 mb-2;
+  }
+  .upcoming-icon {
+    @apply w-20 h-20 rounded-xl bg-slate-800 items-center justify-center;
+  }
+  .upcoming-info {
+    @apply justify-center pr-2;
   }
 }
