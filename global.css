@@ -12,7 +12,6 @@
   --font-sans-extrabold: sans-extrabold;
 }
 @layer components {
-  /* Header Container (កូដចាស់ដែលអ្នកមាន) */
   .home-header {
     @apply flex-row items-center justify-between w-full px-5 py-3;
   }
@@ -25,7 +24,7 @@
     @apply w-14 h-14 rounded-full bg-gray-200;
   }
   .home-balance-card {
-    @apply mx-5 mt-5 p-6 rounded-[30px] bg-blue-500 shadow-lg shadow-blue-500/30;
+    @apply mx-5 mt-5 p-6 rounded-[30px] bg-white shadow-lg shadow-blue-500/30;
   }
   .home-balance-row {
     @apply mt-2 flex-row items-center justify-between;
