@@ -4,36 +4,37 @@
 @import 'nativewind/theme';
 
 @theme {
-  --font-sans: sans-regular;
-  --font-sans-light: sans-light;
-  --font-sans-medium: sans-medium;
-  --font-sans-bold: sans-bold;
-  --font-sans-semibold: sans-semibold;
-  --font-sans-extrabold: sans-extrabold;
+  /* ✅ Quotes! */
+  --font-sans: 'sans-regular';
+  --font-sans-light: 'sans-light';
+  --font-sans-medium: 'sans-medium';
+  --font-sans-bold: 'sans-bold';
+  --font-sans-semibold: 'sans-semibold';
+  --font-sans-extrabold: 'sans-extrabold';
+  /* Custom Colors */
+  --color-primary: #f07b62;
+  --color-secondary: #fdbe44;
+  --color-card-bg: #1e293b;
 }
 @layer components {
+  /* =====================
+     HOME
+  ===================== */
   .home-header {
     @apply flex-row items-center justify-between w-full px-5 py-3;
   }
-
   .home-user {
     @apply flex-row items-center gap-3;
   }
-
-  .home-avatar {
-    @apply w-14 h-14 rounded-full bg-gray-200;
+  .avatar-container {
+    @apply w-14 h-14 p-2 rounded-full border-2 border-gray-700 dark:border-blue-600 
+           bg-white items-center justify-center overflow-hidden;
   }
-  .home-balance-card {
-    @apply mx-5 mt-5 p-6 rounded-[30px] bg-white shadow-lg shadow-blue-500/30;
+  .avatar-image {
+    @apply w-full h-full rounded-full;
   }
   .home-balance-row {
     @apply mt-2 flex-row items-center justify-between;
-  }
-  .balance-amount {
-    @apply text-3xl font-bold text-white;
-  }
-  .balance-label {
-    @apply text-blue-100 opacity-80;
   }
   .list-heading {
     @apply flex-row items-center justify-between mt-5 mb-3 px-5;
@@ -42,9 +43,108 @@
     @apply flex-row items-center gap-3 mb-2;
   }
   .upcoming-icon {
-    @apply w-20 h-20 rounded-xl bg-slate-800 items-center justify-center;
+    @apply w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-900
+  items-center justify-center;
   }
   .upcoming-info {
     @apply justify-center pr-2;
+  }
+  /* =====================
+     TEXT
+  ===================== */
+  .text-body {
+    @apply font-sans text-sm text-gray-700 dark:text-gray-200;
+  }
+  .text-caption {
+    @apply font-sans-light text-xs text-gray-500 dark:text-gray-400;
+  }
+  .text-title {
+    @apply font-sans-medium text-lg text-gray-900 dark:text-white;
+  }
+  .text-subtitle {
+    @apply font-sans-semibold text-base text-gray-800 dark:text-gray-100;
+  }
+  .text-heading {
+    @apply font-sans-bold text-2xl text-gray-900 dark:text-white;
+  }
+  .text-btn {
+    @apply font-sans-semibold text-base text-white;
+  }
+  .text-label {
+    @apply font-sans-extrabold text-sm text-gray-600 dark:text-gray-300;
+  }
+  /* =====================
+     CARDS
+  ===================== */
+  .cart-balance {
+    @apply mx-5 p-6
+    rounded-tl-[40px] rounded-br-[40px] gap-2
+    
+    bg-[#F07B62];
+  }
+  .cart-upcoming {
+    @apply p-4 rounded-2xl
+    border border-slate-200 dark:border-slate-700
+    bg-white dark:bg-gray-800
+    items-center;
+  }
+  .cart-subscription {
+    @apply mx-5 p-4 rounded-2xl
+    bg-[#FDBE44]
+   items-center;
+  }
+  /* icon */
+  /* =====================
+     TABS
+  ===================== */
+  .tab-icon-wrapper {
+    @apply items-center justify-center pt-8;
+  }
+  .tab-icon-pill {
+    @apply w-12 h-12 items-center justify-center rounded-full transition-all duration-300;
+  }
+  .tab-pill-active {
+    @apply bg-blue-500 shadow-md shadow-blue-500/40;
+  }
+  .tab-pill-inactive {
+    @apply bg-transparent;
+  }
+  .tab-indicator {
+    @apply mt-1 w-1.5 h-1.5 bg-blue-500 rounded-full;
+  }
+  /* home-sub */
+  .main-row {
+    @apply flex-row items-center justify-between;
+  }
+  .sub-expanded-content {
+    @apply mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 gap-2;
+  }
+  .icon-wrapper {
+    @apply w-14 h-14 rounded-xl bg-gray-100 dark:bg-gray-800 items-center justify-center;
+  }
+
+  .sub-expanded-row {
+    @apply flex-row items-center justify-between;
+  }
+  .sub-expanded-active {
+    @apply bg-slate-400 dark:bg-gray-400/30;
+  }
+  /* Status Badge Styles */
+  .status-badge {
+    @apply px-3 py-1 rounded-full;
+  }
+
+  .status-active {
+    @apply bg-green-100 dark:bg-green-900/30;
+  }
+  .status-active-text {
+    @apply text-green-600 dark:text-green-400 font-sans-semibold text-[12px];
+  }
+
+  .status-inactive {
+    @apply bg-red-100 dark:bg-red-900/30;
+  }
+  .status-inactive-text {
+    @apply text-red-600 dark:text-red-400 font-sans-semibold text-[12px];
   }
 }

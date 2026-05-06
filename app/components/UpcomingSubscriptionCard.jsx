@@ -5,7 +5,7 @@ import ThemedText from './ThemedText'
 const UpcomingSubscriptionCard = ({ name, price, dayLeft, icon, currency }) => {
   const IconComponent = icon.library;
   return (
-    <ThemedCard>
+    <ThemedCard variant='upcoming'>
       <View className='upcoming-row'>
         <View className='upcoming-icon'>
           <IconComponent name={icon.name} size={24} color="#3b82f6" />

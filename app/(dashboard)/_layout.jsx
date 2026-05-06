@@ -1,19 +1,26 @@
 import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 import { tabs } from '../../assets/constants/data';
-const TabLayout = () => {
-    const { icons } = require('../../assets/constants/icons');
-    const TapIcon = ({ focused, icon }) => {
 
-        return <View className='items-center justify-center pt-9'>
+const TapIcon = ({ focused, icon }) => {
+    return (
+        <View className="tab-icon-wrapper">
             <View
-                className={`justify-center w-10 h-10 items-center transition-all duration-400 rounded-full ${focused ? 'bg-blue-500' : 'bg-gray-300'}`}
+                className={`tab-icon-pill ${focused ? 'tab-pill-active' : 'tab-pill-inactive'}`}
             >
-                <icon.library name={icon.name} size={20} color={focused ? '#fff' : '#4B5563'} />
+                <icon.library
+                    name={icon.name}
+                    size={24}
+                    color={focused ? '#fff' : '#000'}
+                />
             </View>
-            {focused && (<View className=' mt-1 w-3 h-1 bg-blue-500 rounded-full' />)}
+
+            {focused && <View className="tab-indicator" />}
         </View>
-    }
+    );
+};
+
+const TabLayout = () => {
     return (
         <Tabs
             screenOptions={{
@@ -21,14 +28,17 @@ const TabLayout = () => {
                 tabBarShowLabel: false,
                 tabBarStyle: {
                     position: 'absolute',
-                    bottom: 20,
+                    bottom: 24,
                     marginHorizontal: 20,
                     height: 70,
-                    borderRadius: 25,
+                    borderRadius: 35,
                     borderTopWidth: 0,
                     backgroundColor: '#fff',
+                    elevation: 10,
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 10 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 20,
                 }
             }}
         >
@@ -38,12 +48,14 @@ const TabLayout = () => {
                     name={tab.name}
                     options={{
                         title: tab.title,
-                        tabBarIcon: ({ focused }) => <TapIcon focused={focused} icon={tab.icon} />
+                        tabBarIcon: ({ focused }) => (
+                            <TapIcon focused={focused} icon={tab.icon} />
+                        )
                     }}
-
                 />
             ))}
-        </Tabs >
-    )
-}
+        </Tabs>
+    );
+};
+
 export default TabLayout;
