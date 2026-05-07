@@ -9,7 +9,6 @@ const SubscriptionCart = ({
 }) => {
     const IconComponent = icon.library;
     const isActive = status.toLowerCase() === 'active';
-
     return (
         <ThemedCard
             variant='subscription'
@@ -43,20 +42,20 @@ const SubscriptionCart = ({
             {expanded && (
                 <View className='sub-expanded-content'>
                     <View className='sub-expanded-row'>
-                        <ThemedText variant='caption'>Payment</ThemedText>
+                        <ThemedText variant='caption'>Payment:</ThemedText>
                         <ThemedText variant='body'>
                             {paymentMethod}
                         </ThemedText>
                     </View>
 
                     <View className='sub-expanded-row'>
-                        <ThemedText variant='caption'>Renewal Date</ThemedText>
+                        <ThemedText variant='caption'>Renewal Date:</ThemedText>
                         <ThemedText variant='body'>
                             {formatSubscriptionDateTime(renewalDate)}
                         </ThemedText>
                     </View>
                     <View className='sub-expanded-row'>
-                        <ThemedText variant='caption'>Status</ThemedText>
+                        <ThemedText variant='caption'>Status:</ThemedText>
                         <View className={`status-badge ${isActive ? 'status-active' : 'status-inactive'}`}>
                             <ThemedText className={isActive ? 'status-active-text' : 'status-inactive-text'}>
                                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -68,5 +67,4 @@ const SubscriptionCart = ({
         </ThemedCard>
     );
 };
-
 export default SubscriptionCart;

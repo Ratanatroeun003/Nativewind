@@ -5,10 +5,8 @@ import { FlatList, Image, Pressable, View } from "react-native"
 import {
   HOME_BALANCE,
   HOME_SUBSCRIPTIONS,
-  HOME_USER,
   UPCOMING_SUBSCRIPTIONS
 } from "../../assets/constants/data"
-import avatar from "../../assets/images/user.png"
 import "../../global.css"
 import { formatCurrency } from "../../lib/utils"
 import ListHeading from "../components/ListHeading"
@@ -20,6 +18,8 @@ import ThemedView from "../components/ThemedView"
 import UpcomingSubscriptionCard from "../components/UpcomingSubscriptionCard"
 const HomeScreen = () => {
   const [expendedSubscriptionId, setExpendedSubscriptionId] = useState(null)
+  const { user } = useUser()
+  const { signOut } = useClerk()
 
   return (
     <ThemedView safe className='flex-1'>
@@ -28,12 +28,20 @@ const HomeScreen = () => {
       <View className='home-header'>
         <View className='home-user'>
           <View className='avatar-container'>
-            <Image source={avatar} className='avatar-image' />
+            {user?.imageUrl ? (
+              <Image source={{ uri: user.imageUrl }} className='avatar-image' />
+            ) : (
+              <View className='avatar-placeholder'>
+                <Ionicons name="person" size={24} color="#666" />
+              </View>
+            )}
           </View>
-          <ThemedText variant="heading">{HOME_USER.name}</ThemedText>
+          <ThemedText variant="heading">
+            Hello {user?.firstName || user?.username || 'User'}
+          </ThemedText>
         </View>
-        <Pressable>
-          <Ionicons name="add-circle-outline" size={35} color="#3b82f6" />
+        <Pressable onPress={() => signOut()}>
+          <Ionicons name="log-out-outline" size={35} color="#3b82f6" />
         </Pressable>
       </View>
       <Spacer />

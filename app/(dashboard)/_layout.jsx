@@ -1,4 +1,5 @@
-import { Tabs } from 'expo-router';
+import { useAuth } from '@clerk/expo';
+import { Redirect, Tabs } from 'expo-router';
 import { View } from 'react-native';
 import { tabs } from '../../assets/constants/data';
 
@@ -21,6 +22,16 @@ const TapIcon = ({ focused, icon }) => {
 };
 
 const TabLayout = () => {
+    const { isSignedIn, isLoaded } = useAuth()
+
+    if (!isLoaded) {
+        return null
+    }
+
+    if (!isSignedIn) {
+        return <Redirect href="/(auth)/sign-in" />
+    }
+
     return (
         <Tabs
             screenOptions={{

@@ -90,7 +90,7 @@
   }
   .cart-subscription {
     @apply mx-5 p-4 rounded-2xl
-    bg-[#FDBE44]
+    bg-[#de44fd]
    items-center;
   }
   /* icon */
