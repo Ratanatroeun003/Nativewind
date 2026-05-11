@@ -1,23 +1,36 @@
-import { View } from 'react-native'
-import { formatCurrency } from '../../lib/utils'
-import ThemedCard from './ThemedCard'
-import ThemedText from './ThemedText'
+import { Text, View } from 'react-native';
+import { formatCurrency } from '../../lib/utils';
+
 const UpcomingSubscriptionCard = ({ name, price, dayLeft, icon, currency }) => {
   const IconComponent = icon.library;
+
   return (
-    <ThemedCard variant='upcoming'>
-      <View className='upcoming-row'>
-        <View className='upcoming-icon'>
-          <IconComponent name={icon.name} size={24} color="#3b82f6" />
+    <View className='bg-card p-5 rounded-2xl mb-6 border border-border shadow-sm'>
+      <View className='flex-row items-center justify-between'>
+        {/* Icon Section */}
+        <View className='bg-gray-300 p-4 rounded-xl'>
+          <IconComponent
+            name={icon.name}
+            size={20}
+            color="#3b82f6"
+          />
         </View>
-        <View className='upcoming-info'>
-          <ThemedText variant='title'>{formatCurrency(price, currency)}</ThemedText>
-          <ThemedText variant='label' numberOfLines={1}>{dayLeft > 1 ? `${dayLeft} days left` : 'Last day'}</ThemedText>
+        {/* Price & Days Left Section */}
+        <View className='ml-4'>
+          <Text className='text-lg font-sans-bold text-foreground'>
+            {formatCurrency(price, currency)}
+          </Text>
+          <Text className='text-upcoming-day' numberOfLines={1}>
+            {dayLeft > 1 ? `${dayLeft} days left` : 'Last day'}
+          </Text>
         </View>
       </View>
-      <ThemedText variant='title'>{name}</ThemedText>
-    </ThemedCard>
+
+      {/* Subscription Name Section */}
+      <Text className='text-base font-sans-bold mt-1 text-foreground' numberOfLines={1}>
+        {name}
+      </Text>
+    </View>
   )
 }
-
 export default UpcomingSubscriptionCard

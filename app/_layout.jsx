@@ -1,14 +1,25 @@
 import { ClerkProvider } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, usePathname } from "expo-router";
+import { PostHogProvider, usePostHog } from 'posthog-react-native';
 import { useEffect } from "react";
+import { SubscriptionProvider } from "../lib/subscriptionContext";
+
+function PostHogScreenTracker() {
+  const pathname = usePathname();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (posthog && pathname) {
+      posthog.screen(pathname);
+    }
+  }, [pathname, posthog]);
+
+  return null;
+}
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
-
-if (!publishableKey) {
-  throw new Error('Add your Clerk Publishable Key to the .env file')
-}
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -19,21 +30,28 @@ export default function RootLayout() {
     "sans-semibold": require("../assets/fonts/PlusJakartaSans-SemiBold.ttf"),
     "sans-extrabold": require("../assets/fonts/PlusJakartaSans-ExtraBold.ttf"),
   })
+
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
-  if (!fontsLoaded) return null;
-  return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <Stack
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-      </Stack>
-    </ClerkProvider>
-  );
 
+  if (!fontsLoaded) return null;
+
+  return (
+    <PostHogProvider
+      apiKey={process.env.EXPO_PUBLIC_POSTHOG_KEY}
+      options={{
+        host: process.env.EXPO_PUBLIC_POSTHOG_HOST,
+      }}
+    >
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <SubscriptionProvider>
+          <PostHogScreenTracker />
+          <Stack screenOptions={{ headerShown: false }} />
+        </SubscriptionProvider>
+      </ClerkProvider>
+    </PostHogProvider>
+  );
 }

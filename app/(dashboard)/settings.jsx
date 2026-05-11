@@ -1,11 +1,11 @@
-import ThemedText from '../components/ThemedText'
-import ThemedView from '../components/ThemedView'
-const setting = () => {
+import { Text, View } from 'react-native'
+
+const settings = () => {
     return (
-        <ThemedView safe>
-            <ThemedText>Setting</ThemedText>
-        </ThemedView>
+        <View>
+            <Text>settings</Text>
+        </View>
     )
 }
 
-export default setting
+export default settings
