@@ -1,11 +1,11 @@
-import { ThemedText } from '@/components/ThemedText'
-import { ThemedView } from '@/components/ThemedView'
 import { useSignIn } from '@clerk/expo'
 import { Link, useRouter } from 'expo-router'
+import { styled } from 'nativewind'
 import React from 'react'
-import { Pressable, StyleSheet, TextInput, View } from 'react-native'
-
+import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native'
+import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context'
 export default function Page() {
+    const SafeAreaView = styled(RNSafeAreaView)
     const { signIn, errors, fetchStatus } = useSignIn()
     const router = useRouter()
 
@@ -13,244 +13,123 @@ export default function Page() {
     const [password, setPassword] = React.useState('')
     const [code, setCode] = React.useState('')
 
+    const isFetching = fetchStatus === 'fetching'
+
     const handleSubmit = async () => {
         const { error } = await signIn.password({
             emailAddress,
             password,
         })
-        if (error) {
-            console.error(JSON.stringify(error, null, 2))
-            return
-        }
 
         if (signIn.status === 'complete') {
             await signIn.finalize({
-                navigate: ({ session, decorateUrl }) => {
-                    // Handle session tasks
-                    // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-                    if (session?.currentTask) {
-                        console.log(session?.currentTask)
-                        return
-                    }
-
-                    // If no session tasks, navigate the signed-in user to the home page
+                navigate: ({ decorateUrl }) => {
                     const url = decorateUrl('/')
-                    if (url.startsWith('http')) {
-                        window.location.href = url
-                    } else {
-                        router.push(url)
-                    }
+                    router.push(url)
                 },
             })
-        } else if (signIn.status === 'needs_second_factor') {
-            // See https://clerk.com/docs/guides/development/custom-flows/authentication/multi-factor-authentication
         } else if (signIn.status === 'needs_client_trust') {
-            // For other second factor strategies,
-            // see https://clerk.com/docs/guides/development/custom-flows/authentication/client-trust
             const emailCodeFactor = signIn.supportedSecondFactors.find(
                 (factor) => factor.strategy === 'email_code',
             )
-
-            if (emailCodeFactor) {
-                await signIn.mfa.sendEmailCode()
-            }
-        } else {
-            // Check why the sign-in is not complete
-            console.error('Sign-in attempt not complete:', signIn)
+            if (emailCodeFactor) await signIn.mfa.sendEmailCode()
         }
     }
 
     const handleVerify = async () => {
         await signIn.mfa.verifyEmailCode({ code })
-
         if (signIn.status === 'complete') {
             await signIn.finalize({
-                navigate: ({ session, decorateUrl }) => {
-                    // Handle session tasks
-                    // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-                    if (session?.currentTask) {
-                        console.log(session?.currentTask)
-                        return
-                    }
-
-                    // If no session tasks, navigate the signed-in user to the home page
-                    const url = decorateUrl('/')
-                    if (url.startsWith('http')) {
-                        window.location.href = url
-                    } else {
-                        router.push(url)
-                    }
+                navigate: ({ decorateUrl }) => {
+                    router.push(decorateUrl('/'))
                 },
             })
-        } else {
-            // Check why the sign-in is not complete
-            console.error('Sign-in attempt not complete:', signIn)
         }
     }
 
+    const isSignInDisabled = !emailAddress || !password || isFetching
+
+    // --- ទិដ្ឋភាពពេលផ្ទៀងផ្ទាត់ MFA (MFA Verification View) ---
     if (signIn.status === 'needs_client_trust') {
         return (
-            <ThemedView style={styles.container} safe>
-                <ThemedText type="title" style={[styles.title, { fontSize: 24, fontWeight: 'bold' }]}>
-                    Verify your account
-                </ThemedText>
+            <SafeAreaView>
+
+                <Text className="text-foreground text-3xl font-sans-bold mb-2">Verify your account</Text>
+
+                <Text className="text-auth-label">Verification Code</Text>
                 <TextInput
-                    style={styles.input}
+                    className='bg-card border border-border text-foreground px-4 py-4 mb-2 rounded-2xl font-sans-medium focus:border-primary'
                     value={code}
-                    placeholder="Enter your verification code"
-                    placeholderTextColor="#666666"
-                    onChangeText={(code) => setCode(code)}
+                    placeholder="Enter code"
+                    placeholderTextColor="#64748b"
+                    onChangeText={setCode}
                     keyboardType="numeric"
                 />
-                {errors.fields.code && (
-                    <ThemedText style={styles.error}>{errors.fields.code.message}</ThemedText>
-                )}
+                {errors.fields.code && <Text className="text-auth-error">{errors.fields.code.message}</Text>}
+
                 <Pressable
-                    style={({ pressed }) => [
-                        styles.button,
-                        fetchStatus === 'fetching' && styles.buttonDisabled,
-                        pressed && styles.buttonPressed,
-                    ]}
                     onPress={handleVerify}
-                    disabled={fetchStatus === 'fetching'}
+                    disabled={isFetching}
+                    className={`bg-primary py-4 rounded-2xl items-center justify-center mb-2 shadow-md shadow-primary/20 active:opacity-80 ${isFetching ? 'opacity-50' : ''}`}
                 >
-                    <ThemedText style={styles.buttonText}>Verify</ThemedText>
+                    {isFetching ? <ActivityIndicator color="white" /> : <Text className="text-white font-sans-bold text-lg">Verify</Text>}
                 </Pressable>
-                <Pressable
-                    style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
-                    onPress={() => signIn.mfa.sendEmailCode()}
-                >
-                    <ThemedText style={styles.secondaryButtonText}>I need a new code</ThemedText>
+
+                <Pressable className="mt-6 items-center" onPress={() => signIn.mfa.sendEmailCode()}>
+                    <Text className="text-blue-500 font-sans-medium">I need a new code</Text>
                 </Pressable>
-                <Pressable
-                    style={({ pressed }) => [styles.secondaryButton, pressed && styles.buttonPressed]}
-                    onPress={() => signIn.reset()}
-                >
-                    <ThemedText style={styles.secondaryButtonText}>Start over</ThemedText>
+
+                <Pressable className="mt-4 items-center" onPress={() => signIn.reset()}>
+                    <Text className="text-slate-400">Start over</Text>
                 </Pressable>
-            </ThemedView>
+
+            </SafeAreaView>
         )
     }
 
+    // --- ទិដ្ឋភាពពេល Sign In (Initial Sign In View) ---
     return (
-        <ThemedView style={styles.container} safe>
-            <ThemedText type="title" style={styles.title}>
-                Sign in
-            </ThemedText>
+        <SafeAreaView className='bg-background flex-1'>
+            <View className='px-6 justify-center'>
+                <Text className="text-foreground text-3xl font-sans-bold mb-2">Sign In</Text>
 
-            <ThemedText style={styles.label}>Email address</ThemedText>
-            <TextInput
-                style={styles.input}
-                autoCapitalize="none"
-                value={emailAddress}
-                placeholder="Enter email"
-                placeholderTextColor="#666666"
-                onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
-                keyboardType="email-address"
-            />
-            {errors.fields.identifier && (
-                <ThemedText style={styles.error}>{errors.fields.identifier.message}</ThemedText>
-            )}
-            <ThemedText style={styles.label}>Password</ThemedText>
-            <TextInput
-                style={styles.input}
-                value={password}
-                placeholder="Enter password"
-                placeholderTextColor="#666666"
-                secureTextEntry={true}
-                onChangeText={(password) => setPassword(password)}
-            />
-            {errors.fields.password && (
-                <ThemedText style={styles.error}>{errors.fields.password.message}</ThemedText>
-            )}
-            <Pressable
-                style={({ pressed }) => [
-                    styles.button,
-                    (!emailAddress || !password || fetchStatus === 'fetching') && styles.buttonDisabled,
-                    pressed && styles.buttonPressed,
-                ]}
-                onPress={handleSubmit}
-                disabled={!emailAddress || !password || fetchStatus === 'fetching'}
-            >
-                <ThemedText style={styles.buttonText}>Continue</ThemedText>
-            </Pressable>
-            {/* For your debugging purposes. You can just console.log errors, but we put them in the UI for convenience */}
-            {errors && <ThemedText style={styles.debug}>{JSON.stringify(errors, null, 2)}</ThemedText>}
+                <Text className="text-auth-label">Email address</Text>
+                <TextInput
+                    className='bg-card border border-border text-foreground px-4 py-4 mb-2 rounded-2xl font-sans-medium focus:border-primary'
+                    autoCapitalize="none"
+                    value={emailAddress}
+                    placeholder="name@example.com"
+                    placeholderTextColor="#64748b"
+                    onChangeText={setEmailAddress}
+                    keyboardType="email-address"
+                />
+                {errors.fields.identifier && <Text className="text-auth-error">{errors.fields.identifier.message}</Text>}
 
-            <View style={styles.linkContainer}>
-                <ThemedText>Don't have an account? </ThemedText>
-                <Link href="/sign-up">
-                    <ThemedText type="link">Sign up</ThemedText>
-                </Link>
+                <Text className="text-auth-label">Password</Text>
+                <TextInput
+                    className='bg-card border border-border text-foreground px-4 py-4 mb-2 rounded-2xl font-sans-medium focus:border-primary'
+                    value={password}
+                    placeholder="Enter password"
+                    placeholderTextColor="#64748b"
+                    secureTextEntry
+                    onChangeText={setPassword}
+                />
+                {errors.fields.password && <Text className="text-auth-error">{errors.fields.password.message}</Text>}
+                <Pressable
+                    onPress={handleSubmit}
+                    disabled={isSignInDisabled}
+                    className={`bg-primary py-4 rounded-2xl items-center justify-center mb-2 shadow-md shadow-primary/20 active:opacity-80 ${isSignInDisabled ? 'opacity-50' : ''}`}
+                >
+                    {isFetching ? <ActivityIndicator color="white" /> : <Text className="text-white font-sans-bold text-lg">Continue</Text>}
+                </Pressable>
+
+                <View className='flex-row justify-center'>
+                    <Text className="text-slate-400">Don't have an account? </Text>
+                    <Link href="/sign-up">
+                        <Text className="text-blue-500 font-sans-bold">Sign up</Text>
+                    </Link>
+                </View>
             </View>
-        </ThemedView>
+        </SafeAreaView>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        gap: 12,
-    },
-    title: {
-        marginBottom: 8,
-    },
-    label: {
-        fontWeight: '600',
-        fontSize: 14,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        backgroundColor: '#fff',
-    },
-    button: {
-        backgroundColor: '#0a7ea4',
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    buttonPressed: {
-        opacity: 0.7,
-    },
-    buttonDisabled: {
-        opacity: 0.5,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: '600',
-    },
-    secondaryButton: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 8,
-    },
-    secondaryButtonText: {
-        color: '#0a7ea4',
-        fontWeight: '600',
-    },
-    linkContainer: {
-        flexDirection: 'row',
-        gap: 4,
-        marginTop: 12,
-        alignItems: 'center',
-    },
-    error: {
-        color: '#d32f2f',
-        fontSize: 12,
-        marginTop: -8,
-    },
-    debug: {
-        fontSize: 10,
-        opacity: 0.5,
-        marginTop: 8,
-    },
-})

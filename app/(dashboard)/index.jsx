@@ -1,115 +1,123 @@
+import { useAuth, useClerk, useUser } from '@clerk/expo'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import dayjs from "dayjs"
-import { useState } from "react"
-import { FlatList, Image, Pressable, View } from "react-native"
-import {
-  HOME_BALANCE,
-  HOME_SUBSCRIPTIONS,
-  UPCOMING_SUBSCRIPTIONS
-} from "../../assets/constants/data"
+import { Redirect } from 'expo-router'
+import { styled } from 'nativewind'
+import { useState } from 'react'
+import { ActivityIndicator, FlatList, Image, Pressable, Text, View } from 'react-native'
+import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context'
+
+// Import ទិន្នន័យ និង Utilities
+import { HOME_BALANCE, UPCOMING_SUBSCRIPTIONS } from "../../assets/constants/data"
 import "../../global.css"
 import { formatCurrency } from "../../lib/utils"
+import { useSubscriptions } from "../../lib/subscriptionContext"
 import ListHeading from "../components/ListHeading"
-import Spacer from '../components/Spacer'
 import SubscriptionCart from "../components/SubscriptionCart"
-import ThemedCard from "../components/ThemedCard"
-import ThemedText from "../components/ThemedText"
-import ThemedView from "../components/ThemedView"
 import UpcomingSubscriptionCard from "../components/UpcomingSubscriptionCard"
-const HomeScreen = () => {
-  const [expendedSubscriptionId, setExpendedSubscriptionId] = useState(null)
+
+export default function Index() {
+  const SafeAreaView = styled(RNSafeAreaView)
+  const { isSignedIn, isLoaded } = useAuth()
   const { user } = useUser()
   const { signOut } = useClerk()
+  const { subscriptions } = useSubscriptions()
+  const [expendedSubscriptionId, setExpendedSubscriptionId] = useState(null)
 
+  if (!isLoaded) {
+    return (
+      <View className="flex-1 bg-background justify-center items-center">
+        <ActivityIndicator size="large" color="#f07b62" />
+      </View>
+    )
+  }
+  if (!isSignedIn) {
+    return <Redirect href="/(auth)/sign-in" />
+  }
   return (
-    <ThemedView safe className='flex-1'>
-
-      {/* Header */}
-      <View className='home-header'>
-        <View className='home-user'>
-          <View className='avatar-container'>
+    <SafeAreaView className='flex-1 bg-background'>
+      {/* --- HEADER --- */}
+      <View className='flex-row justify-between items-center px-6 py-4'>
+        <View className='flex-row items-center gap-3'>
+          <View className='w-12 h-12 rounded-full overflow-hidden justify-center items-center bg-card border border-border'>
             {user?.imageUrl ? (
-              <Image source={{ uri: user.imageUrl }} className='avatar-image' />
+              <Image source={{ uri: user.imageUrl }} className='w-full h-full' />
             ) : (
-              <View className='avatar-placeholder'>
-                <Ionicons name="person" size={24} color="#666" />
-              </View>
+              <Ionicons name="person" size={24} color="#94a3b8" />
             )}
           </View>
-          <ThemedText variant="heading">
-            Hello {user?.firstName || user?.username || 'User'}
-          </ThemedText>
+          <View>
+            <Text className="text-muted-foreground text-[10px] uppercase tracking-wider font-sans-medium">Welcome back</Text>
+            <Text className="text-foreground text-lg font-sans-bold">
+              {user?.firstName || user?.username || 'User'}
+            </Text>
+          </View>
         </View>
-        <Pressable onPress={() => signOut()}>
-          <Ionicons name="log-out-outline" size={35} color="#3b82f6" />
+        <Pressable
+          onPress={() => signOut()}
+          className="w-10 h-10 bg-card rounded-full justify-center items-center border border-border active:opacity-60"
+        >
+          <Ionicons name="log-out-outline" size={22} color="#ef4444" />
         </Pressable>
       </View>
-      <Spacer />
-
-      {/* Balance Card */}
-      <ThemedCard variant="balance">
-        <ThemedText variant="label">
-          Current Balance
-        </ThemedText>
-        <View className='home-balance-row'>
-          <ThemedText variant="heading">
-            {formatCurrency(HOME_BALANCE.amount)}
-          </ThemedText>
-          <ThemedText variant="subtitle">
-            {dayjs(HOME_BALANCE.nextRenewalDate).format('MM/DD')}
-          </ThemedText>
+      {/* --- BALANCE CARD --- */}
+      <View className="px-6">
+        <View className="mx-3 p-6 rounded-tl-2xl rounded-br-2xl bg-primary gap-2 shadow-sm">
+          <Text className="text-white/80 text-sm font-sans-medium">Current Balance</Text>
+          <View className='flex-row justify-between items-end mt-2'>
+            <Text className="text-white text-4xl font-sans-bold">
+              {formatCurrency(HOME_BALANCE.amount)}
+            </Text>
+            <View className="bg-white/20 px-3 py-1 rounded-full border border-white/10">
+              <Text className="text-white text-[10px] font-sans-bold">
+                NEXT: {dayjs(HOME_BALANCE.nextRenewalDate).format('MMM DD')}
+              </Text>
+            </View>
+          </View>
         </View>
-      </ThemedCard>
-      <Spacer />
-      {/* Upcoming */}
-      <View className='flex-none'>
+      </View>
+      {/* --- UPCOMING SECTION --- */}
+      <View className="mt-10">
         <ListHeading title='Upcoming' />
-        <FlatList
-          data={UPCOMING_SUBSCRIPTIONS}
-          renderItem={({ item }) => <UpcomingSubscriptionCard {...item} />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
-          ListEmptyComponent={
-            <ThemedText variant="caption" className="px-5">
-              No upcoming renewals yet
-            </ThemedText>
-          }
-        />
+        <View className="mt-4">
+          <FlatList
+            data={UPCOMING_SUBSCRIPTIONS}
+            renderItem={({ item }) => <UpcomingSubscriptionCard {...item} />}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}
+            ListEmptyComponent={
+              <Text className="text-muted-foreground text-sm italic px-6 font-sans">No upcoming renewals</Text>
+            }
+          />
+        </View>
       </View>
 
-      <Spacer />
-      {/* All Subscriptions */}
-      <View className='flex-1'>
+      {/* --- ALL SUBSCRIPTIONS SECTION --- */}
+      <View className='flex-1 mt-4'>
         <ListHeading title='All Subscriptions' />
         <FlatList
-          data={HOME_SUBSCRIPTIONS}
+          data={subscriptions}
           keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: 20,
-            gap: 12,
-            paddingBottom: 80,
-          }}
           renderItem={({ item }) => (
-            <SubscriptionCart
-              {...item}
-              expanded={expendedSubscriptionId === item.id}
-              onPress={() => setExpendedSubscriptionId(
-                expendedSubscriptionId === item.id ? null : item.id
-              )}
-            />
+            <View className="mb-3 px-6">
+              <SubscriptionCart
+                {...item}
+                expanded={expendedSubscriptionId === item.id}
+                onPress={() => setExpendedSubscriptionId(
+                  expendedSubscriptionId === item.id ? null : item.id
+                )}
+              />
+            </View>
           )}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 40, paddingTop: 4 }}
           ListEmptyComponent={
-            <ThemedText variant="caption" className="px-5">
-              No subscriptions yet
-            </ThemedText>
+            <Text className="text-muted-foreground text-sm italic px-6 font-sans">No subscriptions found</Text>
           }
         />
       </View>
-    </ThemedView>
+    </SafeAreaView>
   )
 }
-
-export default HomeScreen

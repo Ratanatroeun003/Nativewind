@@ -5,9 +5,9 @@ import { tabs } from '../../assets/constants/data';
 
 const TapIcon = ({ focused, icon }) => {
     return (
-        <View className="tab-icon-wrapper">
+        <View className="items-center justify-center gap-1 mt-8">
             <View
-                className={`tab-icon-pill ${focused ? 'tab-pill-active' : 'tab-pill-inactive'}`}
+                className={`w-12 h-12 rounded-full items-center justify-center ${focused ? 'bg-primary items-center justify-center' : 'bg-transparent'}`}
             >
                 <icon.library
                     name={icon.name}
@@ -16,7 +16,7 @@ const TapIcon = ({ focused, icon }) => {
                 />
             </View>
 
-            {focused && <View className="tab-indicator" />}
+            {focused && <View className="w-1.5 h-1.5 rounded-full bg-primary" />}
         </View>
     );
 };
@@ -44,7 +44,7 @@ const TabLayout = () => {
                     height: 70,
                     borderRadius: 35,
                     borderTopWidth: 0,
-                    backgroundColor: '#fff',
+                    backgroundColor: '#8fd1bd',
                     elevation: 10,
                     shadowColor: '#000',
                     shadowOffset: { width: 0, height: 10 },
