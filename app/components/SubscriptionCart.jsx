@@ -1,4 +1,5 @@
 import cx from 'clsx';
+import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { formatCurrency, formatSubscriptionDateTime } from '../../lib/utils';
 
@@ -6,7 +7,6 @@ const SubscriptionCart = ({
     name, price, plan, icon, category, renewalDate,
     billing, paymentMethod, status, currency, onPress, expanded, color,
 }) => {
-    const IconComponent = icon.library;
     const isActive = status.toLowerCase() === 'active';
 
     return (
@@ -17,11 +17,11 @@ const SubscriptionCart = ({
         >
             <View className='flex-row justify-between items-center'>
                 <View style={{ backgroundColor: color || '#334155' }} className='w-12 h-12 rounded-2xl items-center justify-center'>
-                    <IconComponent
-                        name={icon.name}
-                        size={24}
-                        color="#FFFFFF"
-                    />
+                    {React.createElement(icon.library, {
+                        name: icon.name,
+                        size: 24,
+                        color: '#FFFFFF',
+                    })}
                 </View>
                 <View className='flex-1 px-3'>
                     <Text numberOfLines={1} className='text-lg font-sans-bold text-foreground'>

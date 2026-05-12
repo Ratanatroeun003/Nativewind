@@ -17,7 +17,7 @@ export default function AuthRoutesLayout() {
                 createdAt: user.createdAt,
             })
         }
-    }, [isSignedIn, isLoaded, user]) // ឱ្យវាដើររាល់ពេលស្ថានភាព Login ប្តូរ
+    }, [isSignedIn, isLoaded, user, posthog]) // ឱ្យវាដើររាល់ពេលស្ថានភាព Login ប្តូរ
 
     if (!isLoaded) {
         return null

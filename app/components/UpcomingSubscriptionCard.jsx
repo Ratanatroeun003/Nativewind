@@ -1,19 +1,18 @@
+import React from 'react';
 import { Text, View } from 'react-native';
 import { formatCurrency } from '../../lib/utils';
 
 const UpcomingSubscriptionCard = ({ name, price, dayLeft, icon, currency }) => {
-  const IconComponent = icon.library;
-
   return (
     <View className='bg-card p-5 rounded-2xl mb-6 border border-border shadow-sm'>
       <View className='flex-row items-center justify-between'>
         {/* Icon Section */}
         <View className='bg-gray-300 p-4 rounded-xl'>
-          <IconComponent
-            name={icon.name}
-            size={20}
-            color="#3b82f6"
-          />
+          {React.createElement(icon.library, {
+            name: icon.name,
+            size: 20,
+            color: '#3b82f6',
+          })}
         </View>
         {/* Price & Days Left Section */}
         <View className='ml-4'>

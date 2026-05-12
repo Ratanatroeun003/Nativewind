@@ -1,5 +1,6 @@
 import { useAuth } from '@clerk/expo';
 import { Redirect, Tabs } from 'expo-router';
+import React from 'react';
 import { View } from 'react-native';
 import { tabs } from '../../assets/constants/data';
 
@@ -9,11 +10,11 @@ const TapIcon = ({ focused, icon }) => {
             <View
                 className={`w-12 h-12 rounded-full items-center justify-center ${focused ? 'bg-primary items-center justify-center' : 'bg-transparent'}`}
             >
-                <icon.library
-                    name={icon.name}
-                    size={24}
-                    color={focused ? '#fff' : '#000'}
-                />
+                {React.createElement(icon.library, {
+                    name: icon.name,
+                    size: 24,
+                    color: focused ? '#fff' : '#000',
+                })}
             </View>
 
             {focused && <View className="w-1.5 h-1.5 rounded-full bg-primary" />}
