@@ -3,11 +3,22 @@ import { Pressable, Text, View } from 'react-native';
 import { formatCurrency, formatSubscriptionDateTime } from '../../lib/utils';
 
 const SubscriptionCart = ({
-    name, price, plan, icon, category, renewalDate,
-    billing, paymentMethod, status, currency, onPress, expanded, color,
+    name,
+    price,
+    plan,
+    icon,
+    category,
+    renewalDate,
+    billing,
+    paymentMethod,
+    status,
+    currency,
+    onPress,
+    expanded,
+    color,
 }) => {
-    const IconComponent = icon.library;
-    const isActive = status.toLowerCase() === 'active';
+    const IconComponent = icon?.library;
+    const isActive = status?.toLowerCase() === 'active';
 
     return (
         <Pressable
@@ -16,22 +27,31 @@ const SubscriptionCart = ({
             className={cx('p-4 rounded-xl mb-3 border', expanded && 'border-border')}
         >
             <View className='flex-row justify-between items-center'>
-                <View style={{ backgroundColor: color || '#334155' }} className='w-12 h-12 rounded-2xl items-center justify-center'>
-                    <IconComponent
-                        name={icon.name}
-                        size={24}
-                        color="#FFFFFF"
-                    />
+                {/* Icon */}
+                <View
+                    style={{ backgroundColor: color || '#334155' }}
+                    className='w-12 h-12 rounded-2xl items-center justify-center'
+                >
+                    {IconComponent ? (
+                        <IconComponent
+                            name={icon?.name}
+                            size={24}
+                            color="#FFFFFF"
+                        />
+                    ) : (
+                        <Text style={{ color: '#fff', fontSize: 18 }}>?</Text>
+                    )}
                 </View>
+
                 <View className='flex-1 px-3'>
                     <Text numberOfLines={1} className='text-lg font-sans-bold text-foreground'>
                         {name}
                     </Text>
                     <Text className='text-sm font-sans text-muted-foreground'>
-                        {category?.trim() || plan?.trim() ||
-                            (renewalDate ? formatSubscriptionDateTime(renewalDate) : '')}
+                        {category?.trim() || plan?.trim() || ''}
                     </Text>
                 </View>
+
                 <View className='items-end'>
                     <Text className='text-lg font-sans-bold text-foreground'>
                         {formatCurrency(price, currency)}
@@ -41,7 +61,8 @@ const SubscriptionCart = ({
                     </Text>
                 </View>
             </View>
-            {/* ផ្នែកពង្រីក (Expanded Details) */}
+
+            {/* Expanded Details */}
             {expanded && (
                 <View className='mt-3 pt-3 border-t border-border gap-y-3'>
                     <View className='items-center justify-between flex-row'>
@@ -60,7 +81,7 @@ const SubscriptionCart = ({
                         <Text className="text-muted-foreground text-sm font-sans">Status</Text>
                         <View className={cx('rounded-full px-2 py-1', isActive ? 'bg-success/20' : 'bg-slate-100')}>
                             <Text className={cx('text-xs font-sans-medium', isActive ? 'text-success' : 'text-slate-600')}>
-                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                                {status?.charAt(0).toUpperCase() + status?.slice(1)}
                             </Text>
                         </View>
                     </View>
@@ -70,4 +91,4 @@ const SubscriptionCart = ({
     );
 };
 
-export default SubscriptionCart
+export default SubscriptionCart;
